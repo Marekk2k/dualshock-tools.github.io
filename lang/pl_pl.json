@@ -109,7 +109,7 @@
     "Welcome to the Calibration GUI": "Witamy w Calibration GUI",
     "Just few things to know before you can start:": "O to kilka rzeczy o których musisz wiedzieć przed rozpoczęciem",
     "This website is not affiliated with Sony, PlayStation &amp; co.": "Ta strona nie jest w żaden sposób spowiązana z Sony, PlayStation &amp; co.",
-    "This service is provided without warranty. Use at your own risk.": "Ta usługa nie świadczy, ani nie podlega żadnej gwarancji. Robisz to wszystko to na własne ryzyko.",
+    "This service is provided without warranty. Use at your own risk.": "Ta usługa nie świadczy, ani nie podlega żadnej gwarancji. Robisz to wszystko na własne ryzyko.",
     "Keep the internal battery of the controller connected and ensure it is well charged. If the battery dies during operations, the controller will be damaged and rendered unusable.": "Upewnij się przed procesem kalibracji, czy twoja bateria w kontrolerze jest dobrze naładowana. W przeciwnym razie gdy bateria się rozładuje, to wewnętrzny sterownik kontrolera może ulec całkowitemu uszkodzeniu",
     "Before doing the permanent calibration, try the temporary one to ensure that everything is working well.": "Przed wykonaniem kalibracji stałej wypróbuj kalibrację tymczasową, aby upewnić się, że wszystko działa dobrze.",
     "Understood": "Zrozumiano",
@@ -162,8 +162,8 @@
     "Board model detection thanks to": "Podziękowania dla osoby która wykryła model płytki",
 
     "Please connect the device using a USB cable.": "Proszę podłącz urządzenie przy pomocy kabla USB.",
-    "This DualSense controller has outdated firmware.": "",
-    "Please update the firmware and try again.": "",
+    "This DualSense controller has outdated firmware.": "Ten kontroler Dualsense posiada przestarzały firmware",
+    "Please update the firmware and try again.": "Proszę zaktualizuj firmware i spróbuj ponownie",
 
     "": ""
 }
