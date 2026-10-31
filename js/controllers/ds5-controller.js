@@ -311,6 +311,8 @@ class DS5Controller extends BaseController {
       const fwversion2 = view.getUint32(52, true);
       const fwversion3 = view.getUint32(56, true);
 
+      const touchpad_id = await this.getSystemInfo(5, 2, 8, false);
+      const touchpad_fw = await this.getSystemInfo(5, 4, 8, false);
       const serial_number = await this.getSystemInfo(1, 19, 17);
       const color = ds5_color(serial_number);
       const infoItems = [
@@ -336,8 +338,10 @@ class DS5Controller extends BaseController {
         { key: l("Venom FW Version"), value: "0x" + dec2hex32(fwversion2), cat: "fw", isExtra: true },
         { key: l("Spider FW Version"), value: "0x" + dec2hex32(fwversion3), cat: "fw", isExtra: true },
 
-        { key: l("Touchpad ID"), value: await this.getSystemInfo(5, 2, 8, false), cat: "hw", isExtra: true, copyable: true },
-        { key: l("Touchpad FW Version"), value: await this.getSystemInfo(5, 4, 8, false), cat: "fw", isExtra: true },
+        // Many controllers (any board, incl. BDM-010 on 2024 firmware) and clones
+        // don't answer the touchpad query
+        ...(touchpad_id !== l("error") ? [{ key: l("Touchpad ID"), value: touchpad_id, cat: "hw", isExtra: true, copyable: true }] : []),
+        ...(touchpad_fw !== l("error") ? [{ key: l("Touchpad FW Version"), value: touchpad_fw, cat: "fw", isExtra: true }] : []),
       ];
 
       const old_controller = build_date.search(/ 2020| 2021/);
@@ -346,6 +350,13 @@ class DS5Controller extends BaseController {
         la("ds5_info_error", {"r": "old"})
         disable_bits |= 2; // 2: outdated firmware
       }
+
+      const clone_reason = await this.detectClone(build_date);
+      if(clone_reason) {
+        la("clone", { "r": clone_reason });
+        disable_bits |= 1; // 1: clone
+      }
+      infoItems.push({ key: l("Device Type"), value: clone_reason ? l("clone") : l("original"), cat: "hw", severity: clone_reason ? 'danger' : undefined });
 
       const nv = await this.queryNvStatus();
       const bd_addr = await this.getBdAddr();
@@ -560,6 +571,30 @@ class DS5Controller extends BaseController {
     // TODO 0x12?
     if(a == 0x13) return "BDM-060X";
     return l("Unknown");
+  }
+
+  /**
+   * Look for signs that this is a counterfeit DualSense (issue #222).
+   * @param {string} build_date - FW build date from report 0x20, e.g. "Jan 29 2024"
+   * @returns {string|null} Short reason if it looks like a clone, otherwise null
+   */
+  async detectClone(build_date) {
+    // A firmware built in a future year can't be genuine (one clone reports "Jan 29 2034")
+    const build_year = parseInt(build_date.trim().slice(-4), 10);
+    if(build_year > new Date().getFullYear()) {
+      return "build_date";
+    }
+
+    // Every genuine controller answers the stick finetune query; this is also
+    // what the connect flow reads to save the finetune history
+    try {
+      if(!(await this.getInMemoryModuleData())) {
+        return "finetune";
+      }
+    } catch(_e) {
+      return "finetune";
+    }
+    return null;
   }
 
   async getInMemoryModuleData() {
